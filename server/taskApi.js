@@ -6,8 +6,32 @@ const tasksController = express.Router();
 
 // all 
 tasksController.get('/', async (req, res) => {
-  const tasks = await Task.findAll();
-  res.json(tasks);
+  try {
+    const tasks = await Task.findAll();
+    res.json(tasks);
+  } catch (error) {
+    console.error("Error fetching all tasks:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+//finding task by id
+tasksController.get('/:id', async (req, res) => {
+  const taskId = req.params.id;
+
+  try {
+    const task = await Task.findByPk(taskId);
+
+    if (!task) {
+      res.status(404).json({ error: "Task not found" });
+      return;
+    }
+
+    res.json(task);
+  } catch (error) {
+    console.error("Error fetching task by ID:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // Create 
